@@ -2,6 +2,11 @@ const Piece = (_canvas) => {
 
   const canvas = _canvas
 
+  const colors = {
+    planeAndEnemies: '#40aaff',
+    bombs: '#fff',
+  }
+
   const state = {
     player: {
       x: 20,
@@ -11,8 +16,8 @@ const Piece = (_canvas) => {
       width: 100,
       height: 40,
       lastShotTime: 0,
-      loadingTimeInSeconds: 0.2,
-      color: '#40aaff',
+      loadingTimeInSeconds: 1,
+      color: colors.planeAndEnemies,
       loading: false,
       bombsLeft: 50,
     },
@@ -20,10 +25,8 @@ const Piece = (_canvas) => {
     terminalBombVelocity: 10,
     infoBarHeight: 60,
     colors: {
-      bombs: '#fff',
-      infoBarBackground: '#6e1d00',
-      remainingBombIcon: '#fff',
-      enemies: '#40aaff',
+      bombs: colors.bombs,
+      enemies: colors.planeAndEnemies,
     },
     debrisParticles: [],
     enemies: [],
@@ -58,7 +61,6 @@ const Piece = (_canvas) => {
       context.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
     })
   }
-
 
   const drawInfoBar = (context) => {
     context.fillStyle = '#fff'
@@ -106,7 +108,7 @@ const Piece = (_canvas) => {
     }
 
     // If we're loading and can't drop bombs, paint us accordingly.
-    state.player.color = state.player.loading ? '#ff2450' : '#40aaff'
+    state.player.color = state.player.loading ? '#ff2450' : colors.planeAndEnemies
   }
 
   const createBombHit = (bomb) => {
@@ -116,7 +118,7 @@ const Piece = (_canvas) => {
         size: randomBetween(1, 6),
         x: bomb.x,
         y: bomb.y,
-        color: randomBetween(0, 4) === 0 ? '#fff' : '#40aaff',
+        color: randomBetween(0, 4) === 0 ? colors.bombs : colors.planeAndEnemies,
         velocities: {
           x: randomBetween(-6, 6),
           y: randomBetween(-3, -8),
@@ -255,7 +257,6 @@ const Piece = (_canvas) => {
   const randomBetween = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
-
 
   window._____drawFrameFunction = (canvas, context) => {
     update(canvas)
