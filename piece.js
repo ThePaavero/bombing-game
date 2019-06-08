@@ -216,13 +216,14 @@ const Piece = (_canvas) => {
   }
 
   const doHitChecks = () => {
-    const heightThreshold = 100
+    const heightThreshold = canvas.height - (state.infoBarHeight + 50)
+
     state.bombs.forEach(bomb => {
       if (bomb.y < heightThreshold) {
         return
       }
       state.enemies.forEach(enemy => {
-        if (bomb.x > enemy.y && bomb.x < enemy.y + enemy.width) {
+        if (bomb.x > enemy.x && bomb.x < (enemy.x + enemy.width)) {
           processBombHit(bomb, enemy)
         }
       })
