@@ -211,11 +211,27 @@ const Piece = (_canvas) => {
     }
   }
 
+  const doHitChecks = () => {
+    const heightThreshold = 100
+    state.bombs.forEach(bomb => {
+      if (bomb.y < heightThreshold) {
+        return
+      }
+      state.enemies.forEach(enemy => {
+        if (bomb.x > enemy.y && bomb.x < enemy.y + enemy.width) {
+          console.log('HIT!', enemy, bomb)
+        }
+      })
+    })
+  }
+
+
   const update = () => {
     updatePlayer()
     updateBombs()
     updateDebrisParticles()
     updateEnemies()
+    doHitChecks()
   }
 
   const randomBetween = (min, max) => {
