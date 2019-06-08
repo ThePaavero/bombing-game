@@ -211,6 +211,10 @@ const Piece = (_canvas) => {
     }
   }
 
+  const processBombHit = (bomb, enemy) => {
+    state.enemies = state.enemies.filter(e => e !== enemy)
+  }
+
   const doHitChecks = () => {
     const heightThreshold = 100
     state.bombs.forEach(bomb => {
@@ -219,12 +223,11 @@ const Piece = (_canvas) => {
       }
       state.enemies.forEach(enemy => {
         if (bomb.x > enemy.y && bomb.x < enemy.y + enemy.width) {
-          console.log('HIT!', enemy, bomb)
+          processBombHit(bomb, enemy)
         }
       })
     })
   }
-
 
   const update = () => {
     updatePlayer()
