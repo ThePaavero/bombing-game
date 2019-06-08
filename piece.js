@@ -23,8 +23,10 @@ const Piece = (_canvas) => {
       bombs: '#FF2450',
       infoBarBackground: '#6e1d00',
       remainingBombIcon: '#fff',
+      enemies: '#40aaff',
     },
     debrisParticles: [],
+    enemies: [],
   }
 
   const drawPlayer = (context) => {
@@ -50,6 +52,14 @@ const Piece = (_canvas) => {
     })
   }
 
+  const drawEnemies = (context) => {
+    state.enemies.forEach(enemy => {
+      context.fillStyle = enemy.color
+      context.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+    })
+  }
+
+
   const drawInfoBar = (context) => {
     context.fillStyle = '#fff'
     context.fillRect(0, canvas.height - state.infoBarHeight, canvas.width, state.infoBarHeight)
@@ -69,6 +79,7 @@ const Piece = (_canvas) => {
     drawBombs(context)
     drawDebrisParticles(context)
     drawInfoBar(context)
+    drawEnemies(context)
   }
 
   const updatePlayer = () => {
@@ -150,6 +161,12 @@ const Piece = (_canvas) => {
     })
   }
 
+  const updateEnemies = () => {
+    state.enemies.forEach(enemy => {
+      // ...Should these move or something?
+    })
+  }
+
   const secondsToMilliseconds = (seconds) => {
     return Math.floor(seconds * 1000)
   }
@@ -180,10 +197,26 @@ const Piece = (_canvas) => {
     })
   }
 
+  const createEnemies = () => {
+    const amountOfEnemies = randomBetween(30, 40)
+    for (let i = 0; i < amountOfEnemies; i++) {
+      const width = randomBetween(30, 60)
+      const height = randomBetween(10, 50)
+      state.enemies.push({
+        x: randomBetween(10, canvas.width - 10),
+        y: (canvas.height - height) - state.infoBarHeight,
+        width,
+        height,
+        color: state.colors.enemies,
+      })
+    }
+  }
+
   const update = () => {
     updatePlayer()
     updateBombs()
     updateDebrisParticles()
+    updateEnemies()
   }
 
   const randomBetween = (min, max) => {
@@ -197,5 +230,5 @@ const Piece = (_canvas) => {
   }
 
   setControls()
-
+  createEnemies()
 }
