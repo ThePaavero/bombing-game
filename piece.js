@@ -13,6 +13,8 @@ const Piece = (_canvas) => {
       lastShotTime: 0,
       loadingTimeInSeconds: 3,
     },
+    bombs: [],
+    terminalBombVelocity: 10,
   }
 
   const drawPlayer = (context) => {
@@ -25,16 +27,10 @@ const Piece = (_canvas) => {
   }
 
   const updatePlayer = () => {
-    switch (state.player.direction) {
-      case 'left':
-      default:
-        state.player.x -= state.player.speed
-        break
-      case 'right':
-        state.player.x += state.player.speed
-        break
-    }
+    // Move the player either to the left to the right.
+    state.player.x += state.player.direction === 'left' ? state.player.speed * -1 : state.player.speed
 
+    // Hitting a wall? Turn around.
     if (state.player.x > (canvas.width - state.player.width)) {
       state.player.direction = 'left'
     } else if (state.player.x < 0) {
@@ -42,10 +38,27 @@ const Piece = (_canvas) => {
     }
   }
 
+  const updateBombs = () => {
+    state.bombs.forEach(bomb => {
+      bomb.y += bomb.velocity
+      bomb.velocity += bomb.y / 10
+      if (bomb.velocity < state.terminalBombVelocity) {
+        bomb.velocity = state.terminalBombVelocity
+      }
+    })
+  }
+
   const secondsToMilliseconds = (seconds) => {
     return Math.floor(seconds * 1000)
   }
 
+  const dropBomb = () => {
+    state.bombs.push({
+      x: state.player.x,
+      y: state.player.y,
+      velocity: 1,
+    })
+  }
 
   const fireIfPossible = () => {
     const timeDeltaFromLastShot = new Date().getTime() - state.player.lastShotTime
@@ -54,13 +67,9 @@ const Piece = (_canvas) => {
       console.log('Loading...')
       return
     }
-
-    // todo: Shoot!
-    console.log('FIRING!')
-
+    dropBomb()
     state.player.lastShotTime = new Date().getTime()
   }
-
 
   const setControls = () => {
     canvas.addEventListener('click', e => {
@@ -69,9 +78,9 @@ const Piece = (_canvas) => {
     })
   }
 
-
   const update = () => {
     updatePlayer()
+    updateBombs()
   }
 
   window._____drawFrameFunction = (canvas, context) => {
