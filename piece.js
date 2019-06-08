@@ -10,6 +10,8 @@ const Piece = (_canvas) => {
       direction: 'right',
       width: 100,
       height: 40,
+      lastShotTime: 0,
+      loadingTimeInSeconds: 3,
     },
   }
 
@@ -33,12 +35,38 @@ const Piece = (_canvas) => {
         break
     }
 
-
     if (state.player.x > (canvas.width - state.player.width)) {
       state.player.direction = 'left'
     } else if (state.player.x < 0) {
       state.player.direction = 'right'
     }
+  }
+
+  const secondsToMilliseconds = (seconds) => {
+    return Math.floor(seconds * 1000)
+  }
+
+
+  const fireIfPossible = () => {
+    const timeDeltaFromLastShot = new Date().getTime() - state.player.lastShotTime
+    console.log('secondsToMilliseconds(state.player.loadingTimeInSeconds):', secondsToMilliseconds(state.player.loadingTimeInSeconds))
+    if (timeDeltaFromLastShot < secondsToMilliseconds(state.player.loadingTimeInSeconds)) {
+      console.log('Loading...')
+      return
+    }
+
+    // todo: Shoot!
+    console.log('FIRING!')
+
+    state.player.lastShotTime = new Date().getTime()
+  }
+
+
+  const setControls = () => {
+    canvas.addEventListener('click', e => {
+      e.preventDefault()
+      fireIfPossible()
+    })
   }
 
 
@@ -50,5 +78,7 @@ const Piece = (_canvas) => {
     update(canvas)
     draw(context)
   }
+
+  setControls()
 
 }
