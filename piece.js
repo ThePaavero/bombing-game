@@ -6,12 +6,12 @@ const Piece = (_canvas) => {
     player: {
       x: 20,
       y: 20,
-      speed: 20,
+      speed: 5,
       direction: 'right',
       width: 100,
       height: 40,
       lastShotTime: 0,
-      loadingTimeInSeconds: 3,
+      loadingTimeInSeconds: 1,
     },
     bombs: [],
     terminalBombVelocity: 10,
@@ -22,8 +22,19 @@ const Piece = (_canvas) => {
     context.fillRect(state.player.x, state.player.y, state.player.width, state.player.height)
   }
 
+  const drawBombs = (context) => {
+    state.bombs.forEach(bomb => {
+      context.fillStyle = bomb.color
+      context.beginPath()
+      context.arc(bomb.x, bomb.y, bomb.size, 0, 2 * Math.PI)
+      context.fill()
+    })
+  }
+
+
   const draw = (context) => {
     drawPlayer(context)
+    drawBombs(context)
   }
 
   const updatePlayer = () => {
@@ -41,7 +52,7 @@ const Piece = (_canvas) => {
   const updateBombs = () => {
     state.bombs.forEach(bomb => {
       bomb.y += bomb.velocity
-      bomb.velocity += bomb.y / 10
+      bomb.velocity += bomb.y / 1000
       if (bomb.velocity < state.terminalBombVelocity) {
         bomb.velocity = state.terminalBombVelocity
       }
@@ -54,9 +65,11 @@ const Piece = (_canvas) => {
 
   const dropBomb = () => {
     state.bombs.push({
-      x: state.player.x,
-      y: state.player.y,
+      x: state.player.x + (state.player.width / 2),
+      y: state.player.y + state.player.height,
       velocity: 1,
+      color: '#fff',
+      size: 10,
     })
   }
 
