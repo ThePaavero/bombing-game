@@ -11,10 +11,10 @@ const Piece = (_canvas) => {
       width: 100,
       height: 40,
       lastShotTime: 0,
-      loadingTimeInSeconds: 1,
+      loadingTimeInSeconds: 0.2,
       color: '#40aaff',
       loading: false,
-      bombsLeft: 5,
+      bombsLeft: 50,
     },
     bombs: [],
     terminalBombVelocity: 10,
@@ -96,10 +96,10 @@ const Piece = (_canvas) => {
   }
 
   const createBombHit = (bomb) => {
-    const debrisParticleCount = randomBetween(10, 20)
+    const debrisParticleCount = randomBetween(15, 60)
     for (let i = 0; i < debrisParticleCount; i++) {
       state.debrisParticles.push({
-        size: randomBetween(1, 3),
+        size: randomBetween(1, 6),
         x: bomb.x,
         y: bomb.y,
         color: randomBetween(0, 4) === 0 ? '#40aaff' : '#ff2450',
@@ -133,7 +133,7 @@ const Piece = (_canvas) => {
       }
 
       // If we're hitting the ground, create an explosion and remove ourselves from the bombs array.
-      if (bomb.y >= canvas.height) {
+      if (bomb.y >= (canvas.height - state.infoBarHeight)) {
         createBombHit(bomb)
         state.bombs = state.bombs.filter(b => b !== bomb)
         console.log(state.bombs)
@@ -145,6 +145,8 @@ const Piece = (_canvas) => {
     state.debrisParticles.forEach(particle => {
       particle.y += particle.velocities.y
       particle.x += particle.velocities.x
+
+      particle.velocities.y += randomBetween(0.1, 0.4)
     })
   }
 
