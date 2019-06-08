@@ -212,16 +212,23 @@ const Piece = (_canvas) => {
   }
 
   const processBombHit = (bomb, enemy) => {
+    // Remove the enemy from our array.
     state.enemies = state.enemies.filter(e => e !== enemy)
+
+    // Create a big boom.
+    createBombHit(bomb)
   }
 
   const doHitChecks = () => {
     const heightThreshold = canvas.height - (state.infoBarHeight + 50)
 
     state.bombs.forEach(bomb => {
+      // Don't bother checking if bomb isn't even close to the targets.
       if (bomb.y < heightThreshold) {
         return
       }
+
+      // Ok, we're low enough. Do checks.
       state.enemies.forEach(enemy => {
         if (bomb.x > enemy.x && bomb.x < (enemy.x + enemy.width)) {
           processBombHit(bomb, enemy)
