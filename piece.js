@@ -147,7 +147,6 @@ const Piece = (_canvas) => {
       if (bomb.y >= (canvas.height - state.infoBarHeight)) {
         createBombHit(bomb)
         state.bombs = state.bombs.filter(b => b !== bomb)
-        console.log(state.bombs)
       }
     })
   }
