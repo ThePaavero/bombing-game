@@ -20,7 +20,7 @@ const Piece = (_canvas) => {
     terminalBombVelocity: 10,
     infoBarHeight: 60,
     colors: {
-      bombs: '#FF2450',
+      bombs: '#fff',
       infoBarBackground: '#6e1d00',
       remainingBombIcon: '#fff',
       enemies: '#40aaff',
@@ -86,6 +86,9 @@ const Piece = (_canvas) => {
     // Are we loading or ready to drop bombs?
     state.player.loading = new Date().getTime() - state.player.lastShotTime < secondsToMilliseconds(state.player.loadingTimeInSeconds)
 
+    // Add an appropriate class name for our canvas element. CSS uses that for the cursor.
+    canvas.className = state.player.loading ? 'loading' : ''
+
     // Move the player either to the left to the right.
     state.player.x += state.player.direction === 'left' ? state.player.speed * -1 : state.player.speed
 
@@ -113,7 +116,7 @@ const Piece = (_canvas) => {
         size: randomBetween(1, 6),
         x: bomb.x,
         y: bomb.y,
-        color: randomBetween(0, 4) === 0 ? '#40aaff' : '#ff2450',
+        color: randomBetween(0, 4) === 0 ? '#fff' : '#40aaff',
         velocities: {
           x: randomBetween(-6, 6),
           y: randomBetween(-3, -8),
@@ -155,8 +158,12 @@ const Piece = (_canvas) => {
     state.debrisParticles.forEach(particle => {
       particle.y += particle.velocities.y
       particle.x += particle.velocities.x
-
       particle.velocities.y += randomBetween(0.1, 0.4)
+
+      // If it's below the ground, remove it from our array.
+      if (particle.y > canvas.height) {
+        state.debrisParticles = state.debrisParticles.filter(dp => dp !== particle)
+      }
     })
   }
 
