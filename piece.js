@@ -12,13 +12,16 @@ const Piece = (_canvas) => {
       height: 40,
       lastShotTime: 0,
       loadingTimeInSeconds: 1,
+      color: '#40aaff',
+      loading: false,
+      bombsLeft: 5,
     },
     bombs: [],
     terminalBombVelocity: 10,
   }
 
   const drawPlayer = (context) => {
-    context.fillStyle = 'green';
+    context.fillStyle = state.player.color
     context.fillRect(state.player.x, state.player.y, state.player.width, state.player.height)
   }
 
@@ -31,13 +34,15 @@ const Piece = (_canvas) => {
     })
   }
 
-
   const draw = (context) => {
     drawPlayer(context)
     drawBombs(context)
   }
 
   const updatePlayer = () => {
+    // Are we loading or ready to drop bombs?
+    state.player.loading = new Date().getTime() - state.player.lastShotTime < secondsToMilliseconds(state.player.loadingTimeInSeconds)
+
     // Move the player either to the left to the right.
     state.player.x += state.player.direction === 'left' ? state.player.speed * -1 : state.player.speed
 
@@ -47,14 +52,36 @@ const Piece = (_canvas) => {
     } else if (state.player.x < 0) {
       state.player.direction = 'right'
     }
+
+    // If we're out of bombs, paint us "red."
+    if (state.player.bombsLeft < 1) {
+      state.player.color = '#ff2450'
+      return
+    }
+
+    // If we're loading and can't drop bombs, paint us accordingly.
+    state.player.color = state.player.loading ? '#ff2450' : '#40aaff'
   }
 
   const updateBombs = () => {
     state.bombs.forEach(bomb => {
+
+      // Bomb is falling down.
       bomb.y += bomb.velocity
+
+      // Its velocity grows as it falls.
       bomb.velocity += bomb.y / 1000
+
+      // Bomb's velocity can't exceed terminal velocity.
       if (bomb.velocity < state.terminalBombVelocity) {
         bomb.velocity = state.terminalBombVelocity
+      }
+
+      // Move the bomb either to the left or the right. A little.
+      if (state.player.direction === 'left') {
+        bomb.x -= state.player.speed / 2
+      } else {
+        bomb.x += state.player.speed / 2
       }
     })
   }
@@ -74,12 +101,10 @@ const Piece = (_canvas) => {
   }
 
   const fireIfPossible = () => {
-    const timeDeltaFromLastShot = new Date().getTime() - state.player.lastShotTime
-    console.log('secondsToMilliseconds(state.player.loadingTimeInSeconds):', secondsToMilliseconds(state.player.loadingTimeInSeconds))
-    if (timeDeltaFromLastShot < secondsToMilliseconds(state.player.loadingTimeInSeconds)) {
-      console.log('Loading...')
+    if (state.player.loading || state.player.bombsLeft < 1) {
       return
     }
+    state.player.bombsLeft--
     dropBomb()
     state.player.lastShotTime = new Date().getTime()
   }
