@@ -138,15 +138,22 @@ const Piece = (_canvas) => {
    * Create an explosion.
    *
    * @param bomb
+   * @param includeTargetColors
    */
-  const createBombHit = (bomb) => {
+  const createBombHit = (bomb, includeTargetColors) => {
     const debrisParticleCount = randomBetween(15, 60)
     for (let i = 0; i < debrisParticleCount; i++) {
+      let color = colors.bombs
+
+      if (includeTargetColors) {
+        color = randomBetween(0, 4) === 0 ? colors.bombs : colors.planeAndEnemies // Most particles are from the target building, but some are from the bomb itself.
+      }
+
       state.debrisParticles.push({
         size: randomBetween(1, 6),
         x: bomb.x,
         y: bomb.y,
-        color: randomBetween(0, 4) === 0 ? colors.bombs : colors.planeAndEnemies, // Most particles are from the target building, but some are from the bomb itself.
+        color,
         velocities: {
           x: randomBetween(-6, 6),
           y: randomBetween(-3, -8),
@@ -181,7 +188,7 @@ const Piece = (_canvas) => {
 
       // If we're hitting the ground, create an explosion and remove ourselves from the bombs array.
       if (bomb.y >= (canvas.height - state.infoBarHeight)) {
-        createBombHit(bomb)
+        createBombHit(bomb, false)
         state.bombs = state.bombs.filter(b => b !== bomb)
       }
     })
@@ -281,7 +288,7 @@ const Piece = (_canvas) => {
     state.enemies = state.enemies.filter(e => e !== enemy)
 
     // Create a big boom.
-    createBombHit(bomb)
+    createBombHit(bomb, true)
   }
 
   /**
