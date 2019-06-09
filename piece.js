@@ -114,7 +114,7 @@ const Piece = (_canvas) => {
     // Add an appropriate class name for our canvas element. CSS uses that for the cursor.
     canvas.className = state.player.loading ? 'loading' : ''
 
-    // Move the player either to the left to the right.
+    // Move the player either to the left or to the right.
     state.player.x += state.player.direction === 'left' ? state.player.speed * -1 : state.player.speed
 
     // Hitting a wall? Turn around.
