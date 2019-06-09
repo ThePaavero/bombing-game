@@ -181,9 +181,14 @@ const Piece = (_canvas) => {
 
       // Move the bomb either to the left or the right. A little.
       if (bomb.playerDirectionAtTimeOfDropping === 'left') {
-        bomb.x -= state.player.speed / 2
+        bomb.x -= bomb.momentumFromPlane
       } else {
-        bomb.x += state.player.speed / 2
+        bomb.x += bomb.momentumFromPlane
+      }
+
+      // Some wind resistance will lower some of the plane direction momentum.
+      if (bomb.momentumFromPlane > state.player.speed / 10) {
+        bomb.momentumFromPlane -= 0.01
       }
 
       // If we're hitting the ground, create an explosion and remove ourselves from the bombs array.
@@ -225,6 +230,7 @@ const Piece = (_canvas) => {
   const dropBomb = () => {
     state.bombs.push({
       playerDirectionAtTimeOfDropping: state.player.direction,
+      momentumFromPlane: state.player.speed,
       x: state.player.x + (state.player.width / 2), // From the center of the plane.
       y: state.player.y + state.player.height, // From the bottom of the plane.
       velocity: 1, // This will increase as we keep falling.
