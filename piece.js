@@ -33,6 +33,8 @@ const Piece = (_canvas) => {
     },
     debrisParticles: [],
     enemies: [],
+    shakeSteps: 0,
+    shakeStrength: null,
   }
 
   /**
@@ -284,6 +286,24 @@ const Piece = (_canvas) => {
     }
   }
 
+  const shakeScreen = () => {
+    const rangeOfPixels = randomBetween(state.shakeStrength * -1, state.shakeStrength)
+    state.shakeStrength--
+    if (state.shakeStrength < 0) {
+      return
+    }
+
+    const applyShake = (axis, value) => {
+      canvas.style.transform = 'translate' + axis.toUpperCase() + '(' + value + 'px)'
+    }
+
+    ['x', 'y'].forEach(axis => {
+      applyShake(axis, randomBetween(rangeOfPixels * -1, rangeOfPixels))
+    })
+
+    setTimeout(shakeScreen, randomBetween(1, 10))
+  }
+
   /**
    * A bomb has hit its target. React to that.
    *
@@ -296,6 +316,8 @@ const Piece = (_canvas) => {
 
     // Create a big boom.
     createBombHit(bomb, true)
+    state.shakeStrength = 10
+    shakeScreen()
 
     // If this was the last enemy, do something!
     if (state.enemies.length < 1) {
