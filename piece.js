@@ -143,6 +143,12 @@ const Piece = (_canvas) => {
    * @param includeTargetColors
    */
   const createBombHit = (bomb, includeTargetColors) => {
+
+    // Shake the screen a bit.
+    state.shakeStrength = 10
+    shakeScreen()
+
+    // Throw shit in the air.
     const debrisParticleCount = randomBetween(15, 60)
     for (let i = 0; i < debrisParticleCount; i++) {
       let color = colors.bombs
@@ -286,13 +292,24 @@ const Piece = (_canvas) => {
     }
   }
 
+  /**
+   * Shake the canvas element.
+   */
   const shakeScreen = () => {
+
+    // How much do we want to shake?
     const rangeOfPixels = randomBetween(state.shakeStrength * -1, state.shakeStrength)
+
+    // The rumble should start big and then simmer down.
     state.shakeStrength--
+
     if (state.shakeStrength < 0) {
+      // We're done shaking, return our canvas to the original position.
+      canvas.style.transform = 'none'
       return
     }
 
+    // A little internal helper function for applying the styles.
     const applyShake = (axis, value) => {
       canvas.style.transform = 'translate' + axis.toUpperCase() + '(' + value + 'px)'
     }
@@ -301,7 +318,8 @@ const Piece = (_canvas) => {
       applyShake(axis, randomBetween(rangeOfPixels * -1, rangeOfPixels))
     })
 
-    setTimeout(shakeScreen, randomBetween(1, 10))
+    // Next step of rumbles.
+    setTimeout(shakeScreen, randomBetween(1, 20))
   }
 
   /**
@@ -316,7 +334,7 @@ const Piece = (_canvas) => {
 
     // Create a big boom.
     createBombHit(bomb, true)
-    state.shakeStrength = 10
+    state.shakeStrength = 30
     shakeScreen()
 
     // If this was the last enemy, do something!
@@ -328,7 +346,6 @@ const Piece = (_canvas) => {
   const reactToAllEnemiesKilled = () => {
     window.alert('YAY (todo)')
   }
-
 
   /**
    * Do our hit checks.
