@@ -268,12 +268,12 @@ const Piece = (_canvas) => {
    */
   const createEnemies = () => {
     // How many?
-    const amountOfEnemies = randomBetween(30, 40)
+    const amountOfEnemies = randomBetween(10, 13)
 
     // Add random targets to our state.
     for (let i = 0; i < amountOfEnemies; i++) {
-      const width = randomBetween(30, 60)
-      const height = randomBetween(10, 50)
+      const width = randomBetween(60, 100)
+      const height = randomBetween(20, 50)
       state.enemies.push({
         x: randomBetween(10, canvas.width - 10),
         y: (canvas.height - height) - state.infoBarHeight,
@@ -296,7 +296,17 @@ const Piece = (_canvas) => {
 
     // Create a big boom.
     createBombHit(bomb, true)
+
+    // If this was the last enemy, do something!
+    if (state.enemies.length < 1) {
+      reactToAllEnemiesKilled()
+    }
   }
+
+  const reactToAllEnemiesKilled = () => {
+    window.alert('YAY (todo)')
+  }
+
 
   /**
    * Do our hit checks.
