@@ -15,12 +15,12 @@ const Piece = (_canvas) => {
   const updateMainState = (difficulty) => {
     const playerSpeed = 5 * difficulty
     const loadingTimeInSeconds = 0.5 * difficulty
-    const enemyCount = 20 * difficulty
+    const enemyCount = 10 * difficulty
     const bombsCount = enemyCount * (2 / difficulty)
 
     state = {
       difficulty,
-      gameRunning: false,
+      gameRunning: difficulty > 1,
       player: {
         x: 20,
         y: 20,
@@ -379,7 +379,8 @@ const Piece = (_canvas) => {
   }
 
   const reactToAllEnemiesKilled = () => {
-    window.alert('YAY (todo)')
+    state.difficulty++
+    initLevel(state.difficulty)
   }
 
   /**
@@ -435,6 +436,11 @@ const Piece = (_canvas) => {
     }
   }
 
+  const initLevel = (difficulty) => {
+    updateMainState(difficulty)
+    createEnemies()
+  }
+
   /**
    * Helper function for transforming seconds into milliseconds.
    *
@@ -461,7 +467,6 @@ const Piece = (_canvas) => {
     draw(context)
   }
 
-  updateMainState(1)
   setControls()
-  createEnemies()
+  initLevel(1)
 }
