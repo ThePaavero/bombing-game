@@ -10,31 +10,62 @@ const Piece = (_canvas) => {
   }
 
   // Our game's state.
-  const state = {
-    player: {
-      x: 20,
-      y: 20,
-      speed: 5,
-      direction: 'right',
-      width: 100,
-      height: 40,
-      lastShotTime: 0,
-      loadingTimeInSeconds: 1,
-      color: colors.planeAndEnemies,
-      loading: false,
-      bombsLeft: 50,
-    },
-    bombs: [],
-    terminalBombVelocity: 10,
-    infoBarHeight: 60,
-    colors: {
-      bombs: colors.bombs,
-      enemies: colors.planeAndEnemies,
-    },
-    debrisParticles: [],
-    enemies: [],
-    shakeSteps: 0,
-    shakeStrength: null,
+  let state = {}
+
+  const updateMainState = (difficulty) => {
+    const playerSpeed = 5 * difficulty
+    const loadingTimeInSeconds = 0.5 * difficulty
+    const enemyCount = 20 * difficulty
+    const bombsCount = enemyCount * (2 / difficulty)
+
+    state = {
+      difficulty,
+      gameRunning: false,
+      player: {
+        x: 20,
+        y: 20,
+        speed: playerSpeed,
+        direction: 'right',
+        width: 100,
+        height: 40,
+        lastShotTime: 0,
+        loadingTimeInSeconds,
+        color: colors.planeAndEnemies,
+        loading: false,
+        bombsLeft: bombsCount,
+      },
+      bombs: [],
+      terminalBombVelocity: 10,
+      infoBarHeight: 60,
+      colors: {
+        bombs: colors.bombs,
+        enemies: colors.planeAndEnemies,
+      },
+      debrisParticles: [],
+      enemies: [],
+      shakeSteps: 0,
+      spawnEnemiesNumber: enemyCount,
+      shakeStrength: null,
+    }
+  }
+
+  /**
+   * Draw our "pause" screen.
+   *
+   * @param context
+   */
+  const drawSplashScreen = (context) => {
+    // Overlay/background.
+    context.fillStyle = '#000'
+    context.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Write some text.
+    context.textAlign = 'center'
+    context.font = '90px Arial, sans-serif'
+    context.fillStyle = 'white'
+    context.fillText('Bomber', canvas.width / 2, canvas.height / 2)
+    context.font = '30px Arial, sans-serif'
+    context.fillText('Click to start', canvas.width / 2, (canvas.height / 2) + 40)
   }
 
   /**
@@ -267,7 +298,11 @@ const Piece = (_canvas) => {
   const setControls = () => {
     canvas.addEventListener('click', e => {
       e.preventDefault()
-      dropBombIfPossible()
+      if (state.gameRunning) {
+        dropBombIfPossible()
+      } else {
+        state.gameRunning = true
+      }
     })
   }
 
@@ -276,7 +311,7 @@ const Piece = (_canvas) => {
    */
   const createEnemies = () => {
     // How many?
-    const amountOfEnemies = randomBetween(10, 13)
+    const amountOfEnemies = state.spawnEnemiesNumber
 
     // Add random targets to our state.
     for (let i = 0; i < amountOfEnemies; i++) {
@@ -370,6 +405,9 @@ const Piece = (_canvas) => {
    * Update tick. Just a centralized wrapper method.
    */
   const update = () => {
+    if (!state.gameRunning) {
+      return
+    }
     updatePlayer()
     updateBombs()
     updateDebrisParticles()
@@ -383,11 +421,18 @@ const Piece = (_canvas) => {
    * @param context
    */
   const draw = (context) => {
-    drawPlayer(context)
-    drawBombs(context)
-    drawDebrisParticles(context)
-    drawInfoBar(context)
-    drawEnemies(context)
+    switch (state.gameRunning) {
+      case true:
+        drawPlayer(context)
+        drawBombs(context)
+        drawDebrisParticles(context)
+        drawInfoBar(context)
+        drawEnemies(context)
+        break
+      case false:
+        drawSplashScreen(context)
+        break
+    }
   }
 
   /**
@@ -416,6 +461,7 @@ const Piece = (_canvas) => {
     draw(context)
   }
 
+  updateMainState(1)
   setControls()
   createEnemies()
 }
